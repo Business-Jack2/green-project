@@ -8,11 +8,37 @@ namespace does_it_have_green
             InitializeComponent();
         }
 
+        private bool isGreen(Bitmap image)
+        {
+            for (int i = 0; i < image.Width; i++)
+            {
+                for (int j = 0; j < image.Height; j++)
+                {
+                    Color colour = image.GetPixel(i, j);
+                    if (colour.G > 185)
+                    {
+                        if (colour.R < 137 && colour.R > 40)
+                        {
+                            if (colour.B < 137 && colour.B > 40)
+                            {
+                                return true;
+                            }
+                        }
+                    }
+                }
+
+            }
+            return false;
+        }
+
+
+
         private void button1_Click(object sender, EventArgs e)
         {
             var fileContent = string.Empty;
             var filePath = string.Empty;
-            Image newImage;
+            bool hasGreen = false;
+            Bitmap newImage;
             using (OpenFileDialog openFileDialog = new OpenFileDialog())
             {
                 openFileDialog.InitialDirectory = "c:\\";
@@ -33,11 +59,23 @@ namespace does_it_have_green
                         fileContent = reader.ReadToEnd();
                     }
                     // Console.WriteLine(fileContent);
-                    newImage = Image.FromFile(filePath);
+                    newImage = new Bitmap (filePath);
+                    hasGreen = isGreen(newImage);
+                    int index = 0;
+                    for (int i = filePath.Length - 1; i > -1; i--)
+                    {
+                        if (filePath[i] == '\\')
+                        {
+                            index = i + 1;
+                            break;
+                        }
+                    }
+                    String path = filePath.Substring(index, filePath.Length - index);
+                    // MessageBox.Show(hasGreen.ToString(), "File Content at path: " + filePath, MessageBoxButtons.OK);
+                    label1.Text = String.Format("{0} {1} green", path, hasGreen ? "has" : "has no");
                 }
             }
 
-            MessageBox.Show(newImage, "File Content at path: " + filePath, MessageBoxButtons.OK);
         }
     }
 }
